@@ -4,7 +4,9 @@ kind: ValidatingWebhookConfiguration
 metadata:
   name: aws-global-accelerator-validation
   annotations:
-    cert-manager.io/inject-ca-from: {{ include "aws-global-accelerator-controller.namespace" . }}/{{ .Values.webhook.certificateName }}
+    {{- if .Values.certManager.enabled }}
+    cert-manager.io/inject-ca-from: {{ include "aws-global-accelerator-controller.namespace" . }}/{{ .Values.certmanager.certificateName }}
+    {{- end -}}
 webhooks:
 - admissionReviewVersions:
   - v1
@@ -13,6 +15,7 @@ webhooks:
       name: {{ .Values.webhook.serviceName }}
       namespace: {{ include "aws-global-accelerator-controller.namespace" . }}
       path: /validate-endpointgroupbinding
+      port: {{ .Values.webhook.port }}
   failurePolicy: Fail
   name: validate-endpointgroupbinding.h3poteto.dev
   rules:
